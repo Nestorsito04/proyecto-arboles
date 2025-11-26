@@ -33,15 +33,21 @@ id,nombre,apellido,genero,edad,id_padre,is_dead,was_king,is_king
 
 1. **Mostrar arbol genealogico**: imprime el arbol con indentacion y etiquetas (rey actual, ex-rey, difunto).
 2. **Mostrar rey actual**: despliega la informacion del monarca vigente.
-3. **Asignar nuevo rey**: fuerza un recalculo de la sucesion y vuelve a mostrar al rey actualizado.
-4. **Buscar persona por ID**: solicita un identificador numerico y muestra sus datos.
-5. **Salir**: termina la aplicacion y libera la memoria reservada.
+3. **Mostrar linea de sucesion**: lista, en orden, a los candidatos vivos junto con su relacion con el rey.
+4. **Asignar nuevo rey**: fuerza un recalculo de la sucesion y vuelve a mostrar al rey actualizado.
+5. **Buscar persona por ID**: solicita un identificador numerico y muestra sus datos.
+6. **Salir**: termina la aplicacion y libera la memoria reservada.
 
 ## Reglas de sucesion
 
 - `assignNewKing()` primero busca al rey actual; si existe, desmarca su bandera `is_king` y conserva `was_king = 1`.
 - Se prioriza al hijo izquierdo vivo; si no existe, al derecho. En caso contrario se hace una busqueda en anchura (BFS) por el arbol completo para hallar el siguiente candidato vivo.
 - Cuando no quedan candidatos vivos, la corona permanece en el monarca actual.
+
+## Manejo de entradas
+
+- La vista usa `getline` + `stoi` para leer cada opcion del menu y los identificadores solicitados, lo que evita que el buffer de entrada quede en mal estado.
+- Ante caracteres no numericos se muestra un mensaje de error y se vuelve a solicitar la opcion sin interrumpir la ejecucion.
 
 ## Compilacion y ejecucion (ejemplo con g++)
 
