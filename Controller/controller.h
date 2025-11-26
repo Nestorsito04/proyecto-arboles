@@ -8,5 +8,6 @@ void displayFamilyTree();
 void displayCurrentKing();
 void assignNewKing();
 void searchPersonById();
+void displaySuccessionLine();
 
 #endif

@@ -174,3 +174,60 @@ void searchPersonById() {
     }
 }
 
+void displaySuccessionLine() {
+    if (tree.root == NULL) {
+        displayMessage("No hay datos cargados. No se puede mostrar la linea de sucesion.");
+        return;
+    }
+    
+    TreeNode* currentKing = findCurrentKing(tree.root);
+    if (currentKing == NULL) {
+        displayMessage("No hay rey actual. No se puede determinar la linea de sucesion.");
+        return;
+    }
+    
+    if (currentKing->person.is_dead) {
+        displayMessage("El rey actual esta muerto. Se debe asignar un nuevo rey primero.");
+        return;
+    }
+    
+    TreeNode* succession[MAX_PEOPLE];
+    int count = 0;
+    
+    findSuccessionLine(tree.root, succession, &count);
+    
+        cout << "\n=== LINEA DE SUCESION ACTUAL ===\n";
+        cout << "Rey Actual: "
+            << currentKing->person.name << ' ' << currentKing->person.last_name
+            << " (ID: " << currentKing->person.id << ")\n";
+    
+    if (count == 0) {
+        displayMessage("No hay sucesores vivos en la linea de sucesion.");
+        return;
+    }
+    
+    cout << "\nOrden de sucesion (solo personas vivas):\n";
+    for (int i = 0; i < count; i++) {
+        TreeNode* successor = succession[i];
+        cout << i + 1 << ". "
+             << successor->person.name << ' ' << successor->person.last_name
+             << " (ID: " << successor->person.id
+             << ", Edad: " << successor->person.age;
+        
+        // Mostrar relación con el rey actual
+        if (successor->person.id_father == currentKing->person.id) {
+            cout << ", Hijo directo";
+        } else {
+            TreeNode* father = findPerson(tree.root, successor->person.id_father);
+            if (father != NULL) {
+                TreeNode* grandfather = findPerson(tree.root, father->person.id_father);
+                if (grandfather != NULL && grandfather->person.id == currentKing->person.id) {
+                    cout << ", Nieto";
+                } else {
+                    cout << ", Descendiente";
+                }
+            }
+        }
+        cout << ")\n";
+    }
+}
