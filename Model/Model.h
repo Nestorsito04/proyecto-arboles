@@ -39,5 +39,6 @@ int buildFamilyTree(FamilyTree* tree, Person* people, int count);
 TreeNode* findCurrentKing(TreeNode* root);
 void assignNewKing(FamilyTree* tree);
 Person* findPersonById(FamilyTree* tree, int id);
+void findSuccessionLine(TreeNode* root, TreeNode** succession, int* count);
 
 #endif

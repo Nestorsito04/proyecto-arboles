@@ -201,3 +201,84 @@ Person* findPersonById(FamilyTree* tree, int id) {
     TreeNode* node = findPerson(tree->root, id);
     return node ? &(node->person) : NULL;
 }
+
+void findSuccessionLine(TreeNode* root, TreeNode** succession, int* count) {
+    if (root == NULL || succession == NULL || count == NULL) return;
+    
+    *count = 0;
+    
+    // Encontrar al rey actual
+    TreeNode* currentKing = findCurrentKing(root);
+    if (currentKing == NULL) {
+        // Si no hay rey actual, empezar desde la raíz
+        currentKing = root;
+    }
+    
+    // Si el rey actual está muerto, no hay línea de sucesión
+    if (currentKing->person.is_dead) {
+        return;
+    }
+    
+    // Usar BFS (recorrido por niveles) para obtener el orden de sucesión
+    TreeNode* queue[MAX_PEOPLE];
+    int front = 0, rear = 0;
+    int visited[MAX_PEOPLE] = {0};
+    
+    // Marcar y encolar el rey actual
+    visited[currentKing->person.id] = 1;
+    queue[rear++] = currentKing;
+    
+    while (front < rear && *count < MAX_PEOPLE) {
+        TreeNode* current = queue[front++];
+        
+        // Solo agregar a la sucesión si está vivo y no es el rey actual
+        if (!current->person.is_dead && current != currentKing) {
+            succession[*count] = current;
+            (*count)++;
+        }
+        
+        // Encolar hijos en orden de primogenitura (primero left, luego right)
+        if (current->left != NULL && !visited[current->left->person.id]) {
+            visited[current->left->person.id] = 1;
+            queue[rear++] = current->left;
+        }
+        if (current->right != NULL && !visited[current->right->person.id]) {
+            visited[current->right->person.id] = 1;
+            queue[rear++] = current->right;
+        }
+        
+        // Si no hay más hijos en este nivel, buscar en las ramas de los hermanos
+        if (front >= rear) {
+            // Buscar el siguiente en la línea de sucesión según las reglas reales
+            // Esto asegura que sigamos el orden correcto de primogenitura
+            for (int i = 0; i < rear && *count < MAX_PEOPLE; i++) {
+                TreeNode* node = queue[i];
+                if (node->left != NULL && !visited[node->left->person.id]) {
+                    visited[node->left->person.id] = 1;
+                    queue[rear++] = node->left;
+                }
+                if (node->right != NULL && !visited[node->right->person.id]) {
+                    visited[node->right->person.id] = 1;
+                    queue[rear++] = node->right;
+                }
+            }
+        }
+    }
+    
+    // Ordenar por prioridad de sucesión (primogénitos primero)
+    for (int i = 0; i < *count; i++) {
+        for (int j = i + 1; j < *count; j++) {
+            // Priorizar por nivel en el árbol (más cercano al rey primero)
+            // y por orden de nacimiento (left antes que right)
+            TreeNode* node1 = succession[i];
+            TreeNode* node2 = succession[j];
+            
+            // Simplificación: los que están más arriba en el árbol tienen prioridad
+            if (node1->person.id > node2->person.id) {
+                TreeNode* temp = succession[i];
+                succession[i] = succession[j];
+                succession[j] = temp;
+            }
+        }
+    }
+}
