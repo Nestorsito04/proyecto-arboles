@@ -9,9 +9,10 @@ void displayMenu() {
     cout << "\n=== SISTEMA DE GESTION REAL ===\n";
     cout << "1. Mostrar arbol genealogico\n";
     cout << "2. Mostrar rey actual\n";
-    cout << "3. Asignar nuevo rey\n";
-    cout << "4. Buscar persona por ID\n";
-    cout << "5. Salir\n";
+    cout << "3. Mostrar linea de sucesion\n";
+    cout << "4. Asignar nuevo rey\n";
+    cout << "5. Buscar persona por ID\n";
+    cout << "6. Salir\n";
     cout << "Seleccione una opcion: ";
 }
 
@@ -70,14 +71,17 @@ void runApplication() {
                 displayCurrentKing();
                 break;
             case 3:
+                displaySuccessionLine();
+                break;
+            case 4:
                 assignNewKing();
                 displayMessage("Nuevo rey asignado automaticamente segun las reglas de sucesion.");
                 displayCurrentKing();
                 break;
-            case 4:
+            case 5:
                 searchPersonById();
                 break;
-            case 5:
+            case 6:
                 displayMessage("Saliendo del sistema...");
                 running = 0;
                 break;
