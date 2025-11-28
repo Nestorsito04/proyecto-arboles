@@ -14,7 +14,7 @@ Aplicacion en C++ que modela el arbol genealogico de una familia real, calcula l
 
 1. `runApplication()` (vista) muestra el encabezado del sistema y llama a `initializeSystem()` (controlador).
 2. `initializeSystem()` limpia el arbol, carga la informacion desde `bin/familia_real.csv` y construye la estructura con `buildFamilyTree()` (modelo).
-3. Si ningun registro tiene `is_king = 1`, `assignNewKing()` busca el primer candidato vivo y lo marca como monarca.
+3. Si ningun registro tiene `is_king = 1`, `assignNewKing()` corona automaticamente a la raiz si es candidata; de lo contrario continúa con las reglas de sucesion hasta encontrar al primer heredero disponible.
 4. El usuario interactua con el menu hasta elegir "Salir"; finalmente `cleanupSystem()` libera los nodos creados.
 
 ## Formato del CSV
@@ -35,14 +35,20 @@ id,nombre,apellido,genero,edad,id_padre,is_dead,was_king,is_king
 2. **Mostrar rey actual**: despliega la informacion del monarca vigente.
 3. **Mostrar linea de sucesion**: lista, en orden, a los candidatos vivos junto con su relacion con el rey.
 4. **Asignar nuevo rey**: fuerza un recalculo de la sucesion y vuelve a mostrar al rey actualizado.
+	- El algoritmo salta automaticamente a la rama del siguiente hijo una vez que todos los integrantes vivos de la rama primogenita ya reinaron (tienen `was_king = 1`).
 5. **Buscar persona por ID**: solicita un identificador numerico y muestra sus datos.
 6. **Salir**: termina la aplicacion y libera la memoria reservada.
 
 ## Reglas de sucesion
 
-- `assignNewKing()` primero busca al rey actual; si existe, desmarca su bandera `is_king` y conserva `was_king = 1`.
-- Se prioriza al hijo izquierdo vivo; si no existe, al derecho. En caso contrario se hace una busqueda en anchura (BFS) por el arbol completo para hallar el siguiente candidato vivo.
-- Cuando no quedan candidatos vivos, la corona permanece en el monarca actual.
+1. Localizar al rey actual; si no hay ninguno, se intenta coronar a la raiz viva.
+2. Si el monarca necesita relevo (por muerte o edad ≥ 70) o el usuario lo fuerza, se exploran las ramas en este orden:
+	- **Descendencia del actual (primogenitura estricta):** `findFirstLivingMaleInLine()` recorre primero al hijo izquierdo y baja por sus descendientes antes de considerar el derecho. Solo se consideran varones vivos < 70 sin `was_king`.
+	- **Hermanos:** se elige el siguiente hijo del padre original si es elegible; de lo contrario se exploran sus descendientes. Exreyes no pueden coronarse de nuevo, lo que evita ciclos entre hermanos.
+	- **Tios y ramas colaterales:** se aplica la misma regla, permitiendo ascender desde un ancestro con dos hijos hacia la rama secundaria cuando la primaria se agota.
+	- **Lineas secundarias y mujeres:** si no quedan varones elegibles en ninguna rama, se buscan candidatos en lineas secundarias y finalmente mujeres vivas (15‑69 años) sin `was_king`.
+3. Cuando no se encuentra sucesor, se desmarca al rey actual solo si la regla de reemplazo lo exige; en caso contrario se mantiene la corona.
+4. Todos los candidatos proclamados reciben `is_king = 1` y `was_king = 1`, lo que bloquea su reeleccion y permite avanzar a la siguiente rama en invocaciones sucesivas de la opcion 4.
 
 ## Manejo de entradas
 
