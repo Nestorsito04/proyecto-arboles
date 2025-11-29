@@ -12,7 +12,7 @@ using namespace std;
 static FamilyTree tree;
 static Person people[MAX_PEOPLE];
 static int personCount = 0;
-static const char* DATA_FILE = "../bin/familia_real.csv";
+static const char* DATA_FILE = "bin/familia_real.csv";
 
 static void syncTreeToPeople(TreeNode* node) {
     if (node == NULL) return;
