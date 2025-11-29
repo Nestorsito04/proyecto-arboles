@@ -59,10 +59,11 @@ id,nombre,apellido,genero,edad,id_padre,is_dead,was_king,is_king
 ## Compilacion y ejecucion (ejemplo con g++)
 
 ```powershell
-g++ main.cpp controller/controller.cpp view/view.cpp model/model.cpp -o ../bin/programa # Windows
-./../bin/reino.exe   # Windows
-./bin/reino       # Linux/macOS
+g++ -o bin/test2 src/main.cpp src/controller/controller.cpp src/model/model.cpp src/view/view.cpp   
+
+./bin/test2       # Linux/macOS/windows
 ```
+
 
 Actualiza rutas o flags segun tu entorno o sistema operativo.
 
